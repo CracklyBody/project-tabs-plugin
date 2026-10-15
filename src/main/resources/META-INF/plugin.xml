@@ -1,0 +1,11 @@
+<idea-plugin>
+    <id>dev.projecttabs</id>
+    <name>Project Tabs</name>
+    <vendor>Project Tabs</vendor>
+
+    <description><![CDATA[
+        <p>Shows every open project as a tab in the main toolbar, like documents in a word processor or pages in a browser.</p>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+</idea-plugin>
