@@ -104,4 +104,33 @@ class TabOrderingTest {
         assertSame(small, TabOrdering.prune(small, emptySet(), 5))
     }
 
+    @Test
+    fun `unique names are shown as is`() {
+        val names = TabOrdering.displayNames(listOf(TabName("1", "app", "/w/app"), TabName("2", "lib", "/w/lib")))
+        assertEquals(mapOf("1" to "app", "2" to "lib"), names)
+    }
+
+    @Test
+    fun `duplicate names get the shortest distinguishing parent path`() {
+        val names = TabOrdering.displayNames(
+            listOf(
+                TabName("1", "app", "/Users/me/work/app"),
+                TabName("2", "app", "/Users/me/personal/app"),
+            ),
+        )
+        assertEquals("app — work", names["1"])
+        assertEquals("app — personal", names["2"])
+    }
+
+    @Test
+    fun `duplicate names with equal parents use deeper folders`() {
+        val names = TabOrdering.displayNames(
+            listOf(
+                TabName("1", "app", "/a/src/app"),
+                TabName("2", "app", "C:\\b\\src\\app"),
+            ),
+        )
+        assertEquals("app — a/src", names["1"])
+        assertEquals("app — b/src", names["2"])
+    }
 }
