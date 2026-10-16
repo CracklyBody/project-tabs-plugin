@@ -2,6 +2,8 @@ package dev.projecttabs.service
 
 enum class NewTabPlacement { END, AFTER_CURRENT }
 
+data class TabName(val key: String, val name: String, val path: String?)
+
 object TabOrdering {
 
     fun insert(known: List<String>, key: String, placement: NewTabPlacement, anchor: String?): List<String> {
@@ -65,4 +67,27 @@ object TabOrdering {
         }
         return result
     }
+
+    fun displayNames(tabs: List<TabName>): Map<String, String> {
+        val result = HashMap<String, String>()
+        for ((name, group) in tabs.groupBy { it.name }) {
+            if (group.size == 1) {
+                result[group[0].key] = name
+                continue
+            }
+            val parents = group.associate { it.key to parentFolders(it.path) }
+            val maxDepth = parents.values.maxOf { it.size }
+            var depth = 1
+            while (depth < maxDepth && parents.values.map { it.take(depth) }.toSet().size < group.size) depth++
+            for (tab in group) {
+                val hint = parents.getValue(tab.key).take(depth).reversed().joinToString("/")
+                result[tab.key] = if (hint.isEmpty()) name else "$name — $hint"
+            }
+        }
+        return result
+    }
+
+    private fun parentFolders(path: String?): List<String> =
+        path?.replace('\\', '/')?.trimEnd('/')?.split('/')?.dropLast(1)?.filter { it.isNotEmpty() }?.reversed()
+            ?: emptyList()
 }
