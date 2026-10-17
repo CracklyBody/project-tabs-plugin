@@ -13,6 +13,7 @@ class ProjectTabsSettings : PersistentStateComponent<ProjectTabsSettings.State> 
     class State {
         var showTabs: Boolean = true
         var hideWhenSingle: Boolean = false
+        var snapWindows: Boolean = true
     }
 
     private var myState = State()
