@@ -8,4 +8,13 @@
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="dev.projecttabs.lifecycle.TabsProjectActivity"/>
+    </extensions>
+
+    <applicationListeners>
+        <listener class="dev.projecttabs.lifecycle.TabsProjectCloseListener"
+                  topic="com.intellij.openapi.project.ProjectCloseListener"/>
+    </applicationListeners>
 </idea-plugin>
