@@ -9,6 +9,8 @@
 
     <depends>com.intellij.modules.platform</depends>
 
+    <resource-bundle>messages.ProjectTabsBundle</resource-bundle>
+
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="dev.projecttabs.lifecycle.TabsProjectActivity"/>
     </extensions>
@@ -17,4 +19,10 @@
         <listener class="dev.projecttabs.lifecycle.TabsProjectCloseListener"
                   topic="com.intellij.openapi.project.ProjectCloseListener"/>
     </applicationListeners>
+
+    <actions resource-bundle="messages.ProjectTabsBundle">
+        <action id="ProjectTabs.Toolbar" class="dev.projecttabs.ui.ProjectTabsToolbarAction">
+            <add-to-group group-id="MainToolbarCenter" anchor="first"/>
+        </action>
+    </actions>
 </idea-plugin>
