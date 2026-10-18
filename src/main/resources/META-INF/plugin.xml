@@ -13,6 +13,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="dev.projecttabs.lifecycle.TabsProjectActivity"/>
+        <actionPromoter implementation="dev.projecttabs.actions.ProjectTabsActionPromoter"/>
     </extensions>
 
     <applicationListeners>
@@ -24,5 +25,14 @@
         <action id="ProjectTabs.Toolbar" class="dev.projecttabs.ui.ProjectTabsToolbarAction">
             <add-to-group group-id="MainToolbarCenter" anchor="first"/>
         </action>
+
+        <group id="ProjectTabs.WindowMenu" popup="true">
+            <add-to-group group-id="WindowMenu" anchor="before" relative-to-action="OpenProjectWindows"/>
+
+            <action id="ProjectTabs.Next" class="dev.projecttabs.actions.NextProjectTabAction"
+                    use-shortcut-of="NextProjectWindow"/>
+            <action id="ProjectTabs.Previous" class="dev.projecttabs.actions.PreviousProjectTabAction"
+                    use-shortcut-of="PreviousProjectWindow"/>
+        </group>
     </actions>
 </idea-plugin>
