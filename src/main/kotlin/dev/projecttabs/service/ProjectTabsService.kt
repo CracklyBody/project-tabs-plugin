@@ -76,6 +76,12 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
 
     fun tabCount(): Int = ProjectManager.getInstance().openProjects.count { isTabProject(it) }
 
+    fun neighbor(project: Project, step: Int): Project? {
+        val tabs = tabs()
+        val key = TabOrdering.neighbor(tabs.map { it.key }, keyOf(project), step) ?: return null
+        return tabs.first { it.key == key }.project
+    }
+
     fun successorOnClose(project: Project): Project? {
         val tabs = tabs()
         val key = TabOrdering.successorOnClose(tabs.map { it.key }, keyOf(project)) ?: return null
