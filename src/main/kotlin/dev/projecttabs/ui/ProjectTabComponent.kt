@@ -1,5 +1,6 @@
 package dev.projecttabs.ui
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.components.JBLabel
@@ -11,6 +12,7 @@ import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.Point
+import java.awt.Rectangle
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JPanel
@@ -31,6 +33,7 @@ internal class ProjectTabComponent(
     }
 
     private var hovered = false
+    private var closeHovered = false
     private var pressedAt: Point? = null
 
     init {
@@ -43,16 +46,28 @@ internal class ProjectTabComponent(
         }
         val mouse = TabMouseListener()
         addMouseListener(mouse)
+        addMouseMotionListener(mouse)
+    }
+
+    private val showsClose: Boolean
+        get() = !tab.isClosing && (isActive || hovered)
+
+    private val closeSpace: Int
+        get() = JBUI.scale(CLOSE_GAP) + CLOSE_ICON.iconWidth
+
+    private fun closeBounds(): Rectangle {
+        val icon = CLOSE_ICON
+        return Rectangle(width - JBUI.scale(PADDING_RIGHT) - icon.iconWidth, (height - icon.iconHeight) / 2, icon.iconWidth, icon.iconHeight)
     }
 
     override fun getPreferredSize(): Dimension {
-        val width = JBUI.scale(PADDING_LEFT) + label.preferredSize.width + JBUI.scale(PADDING_RIGHT)
+        val width = JBUI.scale(PADDING_LEFT) + label.preferredSize.width + closeSpace + JBUI.scale(PADDING_RIGHT)
         return Dimension(width.coerceAtMost(JBUI.scale(MAX_WIDTH)), JBUI.scale(ProjectTabsStrip.ROW_HEIGHT))
     }
 
     override fun doLayout() {
         val labelHeight = label.preferredSize.height
-        val labelWidth = (width - JBUI.scale(PADDING_LEFT) - JBUI.scale(PADDING_RIGHT)).coerceAtLeast(0)
+        val labelWidth = (width - JBUI.scale(PADDING_LEFT) - JBUI.scale(PADDING_RIGHT) - closeSpace).coerceAtLeast(0)
         label.setBounds(JBUI.scale(PADDING_LEFT), (height - labelHeight) / 2, labelWidth, labelHeight)
     }
 
@@ -61,7 +76,7 @@ internal class ProjectTabComponent(
         try {
             GraphicsUtil.setupAAPainting(g2)
             val background = when {
-                pressedAt != null -> TabsColors.pressedBackground
+                pressedAt != null && !closeHovered -> TabsColors.pressedBackground
                 isActive -> TabsColors.activeBackground
                 hovered -> TabsColors.hoverBackground
                 else -> null
@@ -69,6 +84,10 @@ internal class ProjectTabComponent(
             if (background != null) {
                 g2.color = background
                 g2.fillRoundRect(0, 0, width, height, TabsColors.arc, TabsColors.arc)
+            }
+            if (showsClose) {
+                val bounds = closeBounds()
+                (if (closeHovered) AllIcons.Actions.CloseHovered else CLOSE_ICON).paintIcon(this, g2, bounds.x, bounds.y)
             }
         } finally {
             g2.dispose()
@@ -84,7 +103,16 @@ internal class ProjectTabComponent(
 
         override fun mouseExited(e: MouseEvent) {
             hovered = false
+            closeHovered = false
             repaint()
+        }
+
+        override fun mouseMoved(e: MouseEvent) {
+            val overClose = showsClose && closeBounds().contains(e.point)
+            if (overClose != closeHovered) {
+                closeHovered = overClose
+                repaint()
+            }
         }
 
         override fun mousePressed(e: MouseEvent) {
@@ -99,13 +127,19 @@ internal class ProjectTabComponent(
             pressedAt = null
             repaint()
             if (!contains(e.point)) return
-            if (wasPressed && SwingUtilities.isLeftMouseButton(e)) strip.activateTab(tab)
+            when {
+                SwingUtilities.isMiddleMouseButton(e) -> strip.closeTab(tab)
+                wasPressed && SwingUtilities.isLeftMouseButton(e) ->
+                    if (showsClose && closeBounds().contains(e.point)) strip.closeTab(tab) else strip.activateTab(tab)
+            }
         }
     }
 
     private companion object {
+        val CLOSE_ICON = AllIcons.Actions.Close
         const val PADDING_LEFT = 10
         const val PADDING_RIGHT = 6
+        const val CLOSE_GAP = 4
         const val MAX_WIDTH = 220
     }
 }
