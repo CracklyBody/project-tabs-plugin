@@ -8,6 +8,7 @@ import com.intellij.util.ui.JBUI
 import dev.projecttabs.service.ProjectTab
 import dev.projecttabs.service.ProjectTabsListener
 import dev.projecttabs.service.ProjectTabsService
+import dev.projecttabs.switching.ProjectCloser
 import dev.projecttabs.switching.ProjectSwitcher
 import java.awt.Dimension
 import java.awt.Window
@@ -97,6 +98,10 @@ internal class ProjectTabsStrip : JPanel(null) {
 
     fun activateTab(tab: ProjectTab) {
         if (tab.project !== ownerProject) ProjectSwitcher.switchTo(tab.project, ownerProject)
+    }
+
+    fun closeTab(tab: ProjectTab) {
+        ProjectCloser.close(tab.project, activateSuccessor = tab.project === ownerProject)
     }
 
     companion object {

@@ -11,6 +11,8 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
+import dev.projecttabs.switching.ProjectSwitcher
+import dev.projecttabs.switching.WindowGeometry
 import java.util.concurrent.ConcurrentHashMap
 
 data class ProjectTab(
@@ -31,6 +33,7 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
 
     private var myState = State()
     private val closingKeys = ConcurrentHashMap.newKeySet<String>()
+    private val successors = ConcurrentHashMap<String, Pair<Project, WindowGeometry?>>()
 
     @Volatile
     private var activeKey: String? = null
@@ -73,6 +76,16 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
 
     fun tabCount(): Int = ProjectManager.getInstance().openProjects.count { isTabProject(it) }
 
+    fun successorOnClose(project: Project): Project? {
+        val tabs = tabs()
+        val key = TabOrdering.successorOnClose(tabs.map { it.key }, keyOf(project)) ?: return null
+        return tabs.first { it.key == key }.project
+    }
+
+    fun activateAfterClose(project: Project, successor: Project, geometry: WindowGeometry?) {
+        successors[keyOf(project)] = successor to geometry
+    }
+
     fun projectActivated(project: Project) {
         val key = keyOf(project)
         if (key == activeKey) return
@@ -94,12 +107,19 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
         if (project.isDefault) return
         val key = keyOf(project)
         closingKeys -= key
+        val successor = successors.remove(key)
         if (isTabProject(project)) {
             synchronized(this) {
                 myState.order = myState.order.filter { it != key }.toMutableList()
             }
         }
         fireTabsChanged()
+        if (successor != null) {
+            ApplicationManager.getApplication().invokeLater {
+                val (target, geometry) = successor
+                if (!target.isDisposed) ProjectSwitcher.switchTo(target, geometry)
+            }
+        }
     }
 
     fun fireTabsChanged() {
