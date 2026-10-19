@@ -33,6 +33,44 @@
                     use-shortcut-of="NextProjectWindow"/>
             <action id="ProjectTabs.Previous" class="dev.projecttabs.actions.PreviousProjectTabAction"
                     use-shortcut-of="PreviousProjectWindow"/>
+            <separator/>
+
+            <action id="ProjectTabs.GoTo1" class="dev.projecttabs.actions.GoToProjectTab1Action">
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control alt 1"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt 1"/>
+            </action>
+            <action id="ProjectTabs.GoTo2" class="dev.projecttabs.actions.GoToProjectTab2Action">
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control alt 2"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt 2"/>
+            </action>
+            <action id="ProjectTabs.GoTo3" class="dev.projecttabs.actions.GoToProjectTab3Action">
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control alt 3"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt 3"/>
+            </action>
+            <action id="ProjectTabs.GoTo4" class="dev.projecttabs.actions.GoToProjectTab4Action">
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control alt 4"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt 4"/>
+            </action>
+            <action id="ProjectTabs.GoTo5" class="dev.projecttabs.actions.GoToProjectTab5Action">
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control alt 5"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt 5"/>
+            </action>
+            <action id="ProjectTabs.GoTo6" class="dev.projecttabs.actions.GoToProjectTab6Action">
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control alt 6"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt 6"/>
+            </action>
+            <action id="ProjectTabs.GoTo7" class="dev.projecttabs.actions.GoToProjectTab7Action">
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control alt 7"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt 7"/>
+            </action>
+            <action id="ProjectTabs.GoTo8" class="dev.projecttabs.actions.GoToProjectTab8Action">
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control alt 8"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt 8"/>
+            </action>
+            <action id="ProjectTabs.GoToLast" class="dev.projecttabs.actions.GoToLastProjectTabAction">
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control alt 9"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt 9"/>
+            </action>
         </group>
     </actions>
 </idea-plugin>

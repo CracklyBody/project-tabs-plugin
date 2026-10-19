@@ -39,3 +39,20 @@ internal abstract class SwitchProjectTabAction(private val step: Int) : ProjectT
 internal class NextProjectTabAction : SwitchProjectTabAction(1)
 
 internal class PreviousProjectTabAction : SwitchProjectTabAction(-1)
+
+internal abstract class GoToProjectTabAction(private val number: Int) : ProjectTabsAction() {
+    override fun isEnabled(project: Project) = service.projectAt(number) != null
+    override fun perform(project: Project) {
+        service.projectAt(number)?.let { if (it !== project) ProjectSwitcher.switchTo(it, project) }
+    }
+}
+
+internal class GoToProjectTab1Action : GoToProjectTabAction(1)
+internal class GoToProjectTab2Action : GoToProjectTabAction(2)
+internal class GoToProjectTab3Action : GoToProjectTabAction(3)
+internal class GoToProjectTab4Action : GoToProjectTabAction(4)
+internal class GoToProjectTab5Action : GoToProjectTabAction(5)
+internal class GoToProjectTab6Action : GoToProjectTabAction(6)
+internal class GoToProjectTab7Action : GoToProjectTabAction(7)
+internal class GoToProjectTab8Action : GoToProjectTabAction(8)
+internal class GoToLastProjectTabAction : GoToProjectTabAction(9)

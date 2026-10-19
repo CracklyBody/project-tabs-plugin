@@ -82,6 +82,11 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
         return tabs.first { it.key == key }.project
     }
 
+    fun projectAt(number: Int): Project? {
+        val tabs = tabs()
+        return TabOrdering.indexForNumber(number, tabs.size)?.let { tabs[it].project }
+    }
+
     fun successorOnClose(project: Project): Project? {
         val tabs = tabs()
         val key = TabOrdering.successorOnClose(tabs.map { it.key }, keyOf(project)) ?: return null
