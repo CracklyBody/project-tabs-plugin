@@ -15,6 +15,7 @@ import dev.projecttabs.service.ProjectTab
 import dev.projecttabs.service.ProjectTabsListener
 import dev.projecttabs.service.ProjectTabsService
 import dev.projecttabs.switching.ProjectCloser
+import dev.projecttabs.switching.ProjectOpener
 import dev.projecttabs.switching.ProjectSwitcher
 import java.awt.Dimension
 import java.awt.Window
@@ -38,6 +39,9 @@ internal class ProjectTabsStrip : JPanel(null) {
     private val overflowButton = StripButton(AllIcons.General.ChevronDown, ProjectTabsBundle.message("strip.overflow.tooltip")) {
         showOverflowPopup(it)
     }
+    private val newTabButton = StripButton(AllIcons.General.Add, ProjectTabsBundle.message("strip.new.tab.tooltip")) {
+        showNewTabPopup(it)
+    }
 
     private var connection: MessageBusConnection? = null
     private var window: Window? = null
@@ -52,6 +56,7 @@ internal class ProjectTabsStrip : JPanel(null) {
         isOpaque = false
         border = JBUI.Borders.empty(0, 6)
         add(overflowButton)
+        add(newTabButton)
     }
 
     override fun addNotify() {
@@ -92,13 +97,13 @@ internal class ProjectTabsStrip : JPanel(null) {
     override fun getPreferredSize(): Dimension {
         val insets = insets
         val tabs = tabComponents.sumOf { it.preferredSize.width } + gap * (tabComponents.size - 1).coerceAtLeast(0)
-        return Dimension(insets.left + tabs + insets.right, insets.top + JBUI.scale(ROW_HEIGHT) + insets.bottom)
+        return Dimension(insets.left + tabs + gap + newTabButton.preferredSize.width + insets.right, insets.top + JBUI.scale(ROW_HEIGHT) + insets.bottom)
     }
 
     override fun getMinimumSize(): Dimension {
         val insets = insets
-        val tabs = if (tabComponents.isEmpty()) 0 else JBUI.scale(MIN_TAB_WIDTH) + gap + overflowButton.preferredSize.width
-        return Dimension(insets.left + tabs + insets.right, insets.top + JBUI.scale(ROW_HEIGHT) + insets.bottom)
+        val tabs = if (tabComponents.isEmpty()) 0 else JBUI.scale(MIN_TAB_WIDTH) + gap + overflowButton.preferredSize.width + gap
+        return Dimension(insets.left + tabs + newTabButton.preferredSize.width + insets.right, insets.top + JBUI.scale(ROW_HEIGHT) + insets.bottom)
     }
 
     override fun doLayout() {
@@ -106,11 +111,12 @@ internal class ProjectTabsStrip : JPanel(null) {
         val innerHeight = height - insets.top - insets.bottom
         val rowHeight = minOf(innerHeight, JBUI.scale(ROW_HEIGHT))
         val y = insets.top + (innerHeight - rowHeight) / 2
+        val newTabWidth = newTabButton.preferredSize.width
         val overflowWidth = overflowButton.preferredSize.width
 
         val layout = TabLayout.compute(
             preferred = tabComponents.map { it.preferredSize.width },
-            available = width - insets.left - insets.right,
+            available = width - insets.left - insets.right - newTabWidth - gap,
             minWidth = JBUI.scale(MIN_TAB_WIDTH),
             gap = gap,
             overflowWidth = overflowWidth,
@@ -127,9 +133,11 @@ internal class ProjectTabsStrip : JPanel(null) {
         hiddenTabs = tabComponents.filterIndexed { index, _ -> index !in visible }.map { it.tab }
         if (layout.overflow) {
             overflowButton.setBounds(x, y, overflowWidth, rowHeight)
+            x += overflowWidth + gap
         } else {
             overflowButton.setBounds(0, 0, 0, 0)
         }
+        newTabButton.setBounds(x, y, newTabWidth, rowHeight)
     }
 
     fun activateTab(tab: ProjectTab) {
@@ -144,6 +152,28 @@ internal class ProjectTabsStrip : JPanel(null) {
         val group = DefaultActionGroup(hiddenTabs.map { tab -> DumbAwareAction.create(tab.displayName) { activateTab(tab) } })
         JBPopupFactory.getInstance()
             .createActionGroupPopup(null, group, DataManager.getInstance().getDataContext(button), JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, false)
+            .showUnderneathOf(button)
+    }
+
+    private fun showNewTabPopup(button: JComponent) {
+        val group = DefaultActionGroup()
+        val recent = ProjectOpener.recentProjectActions()
+        if (recent.isNotEmpty()) {
+            group.addSeparator(ProjectTabsBundle.message("popup.new.tab.recent"))
+            group.addAll(recent)
+            group.addSeparator()
+        }
+        group.add(DumbAwareAction.create(ProjectTabsBundle.message("popup.new.tab.open"), AllIcons.Actions.MenuOpen) {
+            ProjectOpener.chooseAndOpen(ownerProject)
+        })
+        JBPopupFactory.getInstance()
+            .createActionGroupPopup(
+                ProjectTabsBundle.message("popup.new.tab.title"),
+                group,
+                DataManager.getInstance().getDataContext(button),
+                JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
+                false,
+            )
             .showUnderneathOf(button)
     }
 
