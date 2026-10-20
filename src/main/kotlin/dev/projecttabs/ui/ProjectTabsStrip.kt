@@ -1,10 +1,16 @@
 package dev.projecttabs.ui
 
+import com.intellij.icons.AllIcons
+import com.intellij.ide.DataManager
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.messages.MessageBusConnection
 import com.intellij.util.ui.JBUI
+import dev.projecttabs.ProjectTabsBundle
 import dev.projecttabs.service.ProjectTab
 import dev.projecttabs.service.ProjectTabsListener
 import dev.projecttabs.service.ProjectTabsService
@@ -14,6 +20,7 @@ import java.awt.Dimension
 import java.awt.Window
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
+import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
@@ -27,6 +34,10 @@ internal class ProjectTabsStrip : JPanel(null) {
         }
 
     private val tabComponents = ArrayList<ProjectTabComponent>()
+    private var hiddenTabs: List<ProjectTab> = emptyList()
+    private val overflowButton = StripButton(AllIcons.General.ChevronDown, ProjectTabsBundle.message("strip.overflow.tooltip")) {
+        showOverflowPopup(it)
+    }
 
     private var connection: MessageBusConnection? = null
     private var window: Window? = null
@@ -40,6 +51,7 @@ internal class ProjectTabsStrip : JPanel(null) {
     init {
         isOpaque = false
         border = JBUI.Borders.empty(0, 6)
+        add(overflowButton)
     }
 
     override fun addNotify() {
@@ -77,23 +89,47 @@ internal class ProjectTabsStrip : JPanel(null) {
 
     private val gap: Int get() = JBUI.scale(GAP)
 
+    override fun getPreferredSize(): Dimension {
+        val insets = insets
+        val tabs = tabComponents.sumOf { it.preferredSize.width } + gap * (tabComponents.size - 1).coerceAtLeast(0)
+        return Dimension(insets.left + tabs + insets.right, insets.top + JBUI.scale(ROW_HEIGHT) + insets.bottom)
+    }
+
+    override fun getMinimumSize(): Dimension {
+        val insets = insets
+        val tabs = if (tabComponents.isEmpty()) 0 else JBUI.scale(MIN_TAB_WIDTH) + gap + overflowButton.preferredSize.width
+        return Dimension(insets.left + tabs + insets.right, insets.top + JBUI.scale(ROW_HEIGHT) + insets.bottom)
+    }
+
     override fun doLayout() {
         val insets = insets
         val innerHeight = height - insets.top - insets.bottom
         val rowHeight = minOf(innerHeight, JBUI.scale(ROW_HEIGHT))
         val y = insets.top + (innerHeight - rowHeight) / 2
-        var x = insets.left
-        for (component in tabComponents) {
-            val width = component.preferredSize.width
-            component.setBounds(x, y, width, rowHeight)
-            x += width + gap
-        }
-    }
+        val overflowWidth = overflowButton.preferredSize.width
 
-    override fun getPreferredSize(): Dimension {
-        val insets = insets
-        val tabs = tabComponents.sumOf { it.preferredSize.width } + gap * (tabComponents.size - 1).coerceAtLeast(0)
-        return Dimension(insets.left + tabs + insets.right, insets.top + JBUI.scale(ROW_HEIGHT) + insets.bottom)
+        val layout = TabLayout.compute(
+            preferred = tabComponents.map { it.preferredSize.width },
+            available = width - insets.left - insets.right,
+            minWidth = JBUI.scale(MIN_TAB_WIDTH),
+            gap = gap,
+            overflowWidth = overflowWidth,
+            activeIndex = tabComponents.indexOfFirst { it.isActive },
+        )
+
+        tabComponents.forEach { it.setBounds(0, 0, 0, 0) }
+        var x = insets.left
+        layout.visible.forEachIndexed { slot, index ->
+            tabComponents[index].setBounds(x, y, layout.widths[slot], rowHeight)
+            x += layout.widths[slot] + gap
+        }
+        val visible = layout.visible.toSet()
+        hiddenTabs = tabComponents.filterIndexed { index, _ -> index !in visible }.map { it.tab }
+        if (layout.overflow) {
+            overflowButton.setBounds(x, y, overflowWidth, rowHeight)
+        } else {
+            overflowButton.setBounds(0, 0, 0, 0)
+        }
     }
 
     fun activateTab(tab: ProjectTab) {
@@ -104,8 +140,16 @@ internal class ProjectTabsStrip : JPanel(null) {
         ProjectCloser.close(tab.project, activateSuccessor = tab.project === ownerProject)
     }
 
+    private fun showOverflowPopup(button: JComponent) {
+        val group = DefaultActionGroup(hiddenTabs.map { tab -> DumbAwareAction.create(tab.displayName) { activateTab(tab) } })
+        JBPopupFactory.getInstance()
+            .createActionGroupPopup(null, group, DataManager.getInstance().getDataContext(button), JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, false)
+            .showUnderneathOf(button)
+    }
+
     companion object {
         const val ROW_HEIGHT = 28
         private const val GAP = 2
+        private const val MIN_TAB_WIDTH = 72
     }
 }
