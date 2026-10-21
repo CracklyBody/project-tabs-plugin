@@ -13,6 +13,7 @@ import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.Point
 import java.awt.Rectangle
+import java.awt.dnd.DragSource
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JPanel
@@ -35,6 +36,7 @@ internal class ProjectTabComponent(
     private var hovered = false
     private var closeHovered = false
     private var pressedAt: Point? = null
+    private var dragging = false
 
     init {
         isOpaque = false
@@ -76,7 +78,7 @@ internal class ProjectTabComponent(
         try {
             GraphicsUtil.setupAAPainting(g2)
             val background = when {
-                pressedAt != null && !closeHovered -> TabsColors.pressedBackground
+                dragging || (pressedAt != null && !closeHovered) -> TabsColors.pressedBackground
                 isActive -> TabsColors.activeBackground
                 hovered -> TabsColors.hoverBackground
                 else -> null
@@ -122,9 +124,23 @@ internal class ProjectTabComponent(
             }
         }
 
+        override fun mouseDragged(e: MouseEvent) {
+            val start = pressedAt ?: return
+            if (!dragging && start.distance(e.point) >= DragSource.getDragThreshold()) {
+                dragging = true
+                strip.dragStarted()
+            }
+            if (dragging) strip.dragMoved(SwingUtilities.convertPoint(this@ProjectTabComponent, e.point, strip).x)
+        }
+
         override fun mouseReleased(e: MouseEvent) {
             val wasPressed = pressedAt != null
             pressedAt = null
+            if (dragging) {
+                dragging = false
+                strip.dragFinished(this@ProjectTabComponent)
+                return
+            }
             repaint()
             if (!contains(e.point)) return
             when {

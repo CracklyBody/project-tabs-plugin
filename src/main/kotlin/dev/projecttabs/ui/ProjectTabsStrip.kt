@@ -18,6 +18,7 @@ import dev.projecttabs.switching.ProjectCloser
 import dev.projecttabs.switching.ProjectOpener
 import dev.projecttabs.switching.ProjectSwitcher
 import java.awt.Dimension
+import java.awt.Graphics
 import java.awt.Window
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -51,6 +52,8 @@ internal class ProjectTabsStrip : JPanel(null) {
             rebuild()
         }
     }
+
+    private var dropIndex: Int? = null
 
     init {
         isOpaque = false
@@ -88,6 +91,7 @@ internal class ProjectTabsStrip : JPanel(null) {
             tabComponents += component
             add(component, index)
         }
+        dropIndex = null
         revalidate()
         repaint()
     }
@@ -140,12 +144,49 @@ internal class ProjectTabsStrip : JPanel(null) {
         newTabButton.setBounds(x, y, newTabWidth, rowHeight)
     }
 
+    override fun paintChildren(g: Graphics) {
+        super.paintChildren(g)
+        val index = dropIndex ?: return
+        val shown = tabComponents.filter { it.width > 0 }
+        val anchor = shown.firstOrNull() ?: return
+        val target = tabComponents.getOrNull(index)?.takeIf { it.width > 0 }
+        val x = if (target != null) target.x - gap / 2 else shown.last().let { it.x + it.width + gap / 2 }
+        val lineWidth = JBUI.scale(2)
+        g.color = TabsColors.dropIndicator
+        g.fillRect(x - lineWidth / 2, anchor.y, lineWidth, anchor.height)
+    }
+
     fun activateTab(tab: ProjectTab) {
         if (tab.project !== ownerProject) ProjectSwitcher.switchTo(tab.project, ownerProject)
     }
 
     fun closeTab(tab: ProjectTab) {
         ProjectCloser.close(tab.project, activateSuccessor = tab.project === ownerProject)
+    }
+
+    fun dragStarted() {
+        dropIndex = null
+        repaint()
+    }
+
+    fun dragMoved(x: Int) {
+        val shown = tabComponents.filter { it.width > 0 }
+        val last = shown.lastOrNull() ?: return
+        val before = shown.firstOrNull { x < it.x + it.width / 2 }
+        dropIndex = tabComponents.indexOf(before ?: last) + if (before == null) 1 else 0
+        repaint()
+    }
+
+    fun dragFinished(source: ProjectTabComponent) {
+        val target = dropIndex
+        dropIndex = null
+        val from = tabComponents.indexOf(source)
+        if (target == null || from < 0) {
+            repaint()
+            return
+        }
+        val toIndex = if (target > from) target - 1 else target
+        if (toIndex == from) repaint() else ProjectTabsService.getInstance().move(source.tab.key, toIndex)
     }
 
     private fun showOverflowPopup(button: JComponent) {
