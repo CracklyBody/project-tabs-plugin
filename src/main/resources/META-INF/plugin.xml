@@ -19,6 +19,8 @@
     <applicationListeners>
         <listener class="dev.projecttabs.lifecycle.TabsProjectCloseListener"
                   topic="com.intellij.openapi.project.ProjectCloseListener"/>
+        <listener class="dev.projecttabs.lifecycle.TabsAppLifecycleListener"
+                  topic="com.intellij.ide.AppLifecycleListener"/>
     </applicationListeners>
 
     <actions resource-bundle="messages.ProjectTabsBundle">

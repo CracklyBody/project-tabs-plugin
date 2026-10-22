@@ -41,6 +41,9 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
     @Volatile
     private var previousActiveKey: String? = null
 
+    @Volatile
+    private var exiting = false
+
     @Synchronized
     override fun getState(): State = myState
 
@@ -113,6 +116,7 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
     }
 
     fun projectOpened(project: Project) {
+        exiting = false
         if (isTabProject(project)) fireTabsChanged()
     }
 
@@ -127,7 +131,7 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
         val key = keyOf(project)
         closingKeys -= key
         val successor = successors.remove(key)
-        if (isTabProject(project)) {
+        if (!exiting && isTabProject(project)) {
             synchronized(this) {
                 myState.order = myState.order.filter { it != key }.toMutableList()
             }
@@ -139,6 +143,10 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
                 if (!target.isDisposed) ProjectSwitcher.switchTo(target, geometry)
             }
         }
+    }
+
+    fun appClosing() {
+        exiting = true
     }
 
     fun fireTabsChanged() {
