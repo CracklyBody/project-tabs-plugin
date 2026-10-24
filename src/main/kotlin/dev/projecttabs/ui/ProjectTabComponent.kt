@@ -118,6 +118,10 @@ internal class ProjectTabComponent(
         }
 
         override fun mousePressed(e: MouseEvent) {
+            if (e.isPopupTrigger) {
+                strip.showTabMenu(tab, this@ProjectTabComponent, e.x, e.y)
+                return
+            }
             if (SwingUtilities.isLeftMouseButton(e)) {
                 pressedAt = e.point
                 repaint()
@@ -134,6 +138,10 @@ internal class ProjectTabComponent(
         }
 
         override fun mouseReleased(e: MouseEvent) {
+            if (e.isPopupTrigger) {
+                strip.showTabMenu(tab, this@ProjectTabComponent, e.x, e.y)
+                return
+            }
             val wasPressed = pressedAt != null
             pressedAt = null
             if (dragging) {

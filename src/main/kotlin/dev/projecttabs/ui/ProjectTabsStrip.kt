@@ -164,6 +164,10 @@ internal class ProjectTabsStrip : JPanel(null) {
         ProjectCloser.close(tab.project, activateSuccessor = tab.project === ownerProject)
     }
 
+    fun showTabMenu(tab: ProjectTab, component: JComponent, x: Int, y: Int) {
+        ProjectTabMenu.show(tab, ownerProject, component, x, y)
+    }
+
     fun dragStarted() {
         dropIndex = null
         repaint()
