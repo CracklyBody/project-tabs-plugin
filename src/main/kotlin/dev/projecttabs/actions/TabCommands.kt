@@ -5,6 +5,7 @@ import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
 import dev.projecttabs.service.ProjectTabsService
 import dev.projecttabs.switching.ProjectCloser
+import dev.projecttabs.switching.ProjectOpener
 import dev.projecttabs.switching.ProjectSwitcher
 import java.awt.datatransfer.StringSelection
 import java.nio.file.Path
@@ -35,6 +36,12 @@ internal object TabCommands {
         if (toClose.isEmpty()) return
         if (owner != null && owner !== keep && toClose.any { it === owner }) ProjectSwitcher.switchTo(keep, owner)
         ProjectCloser.closeAll(toClose)
+    }
+
+    fun canReopenClosed(): Boolean = service.peekRecentlyClosed() != null
+
+    fun reopenClosed() {
+        service.popRecentlyClosed()?.let(ProjectOpener::openInNewWindow)
     }
 
     fun copyPath(project: Project) {
