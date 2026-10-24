@@ -73,6 +73,15 @@
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control alt 9"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt 9"/>
             </action>
+            <separator/>
+
+            <action id="ProjectTabs.Close" class="dev.projecttabs.actions.CloseProjectTabAction"/>
+            <action id="ProjectTabs.CloseOthers" class="dev.projecttabs.actions.CloseOtherProjectTabsAction"/>
+            <action id="ProjectTabs.CloseToRight" class="dev.projecttabs.actions.CloseProjectTabsToRightAction"/>
+            <separator/>
+
+            <action id="ProjectTabs.CopyPath" class="dev.projecttabs.actions.CopyProjectPathAction"/>
+            <action id="ProjectTabs.Reveal" class="dev.projecttabs.actions.RevealProjectAction"/>
         </group>
     </actions>
 </idea-plugin>

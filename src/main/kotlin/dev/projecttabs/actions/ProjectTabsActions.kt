@@ -1,5 +1,6 @@
 package dev.projecttabs.actions
 
+import com.intellij.ide.actions.RevealFileAction
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
@@ -56,3 +57,32 @@ internal class GoToProjectTab6Action : GoToProjectTabAction(6)
 internal class GoToProjectTab7Action : GoToProjectTabAction(7)
 internal class GoToProjectTab8Action : GoToProjectTabAction(8)
 internal class GoToLastProjectTabAction : GoToProjectTabAction(9)
+
+internal class CloseProjectTabAction : ProjectTabsAction() {
+    override fun perform(project: Project) = TabCommands.close(project, project)
+}
+
+internal class CloseOtherProjectTabsAction : ProjectTabsAction() {
+    override fun isEnabled(project: Project) = TabCommands.othersOf(project).isNotEmpty()
+    override fun perform(project: Project) = TabCommands.closeOthers(project, project)
+}
+
+internal class CloseProjectTabsToRightAction : ProjectTabsAction() {
+    override fun isEnabled(project: Project) = TabCommands.rightOf(project).isNotEmpty()
+    override fun perform(project: Project) = TabCommands.closeToRight(project, project)
+}
+
+internal class CopyProjectPathAction : ProjectTabsAction() {
+    override fun isEnabled(project: Project) = project.basePath != null
+    override fun perform(project: Project) = TabCommands.copyPath(project)
+}
+
+internal class RevealProjectAction : ProjectTabsAction() {
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+        e.presentation.text = RevealFileAction.getActionName()
+    }
+
+    override fun isEnabled(project: Project) = project.basePath != null
+    override fun perform(project: Project) = TabCommands.reveal(project)
+}
