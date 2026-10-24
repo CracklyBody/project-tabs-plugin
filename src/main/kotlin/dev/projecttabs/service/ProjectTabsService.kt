@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import dev.projecttabs.switching.ProjectSwitcher
 import dev.projecttabs.switching.WindowGeometry
+import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 data class ProjectTab(
@@ -29,6 +30,7 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
 
     class State {
         var order: MutableList<String> = mutableListOf()
+        var recentlyClosed: MutableList<String> = mutableListOf()
     }
 
     private var myState = State()
@@ -108,6 +110,18 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
         successors[keyOf(project)] = successor to geometry
     }
 
+    fun peekRecentlyClosed(): String? {
+        val open = tabs().mapNotNull { it.path }.toSet()
+        return myState.recentlyClosed.firstOrNull { it !in open && File(it).exists() }
+    }
+
+    @Synchronized
+    fun popRecentlyClosed(): String? {
+        val path = peekRecentlyClosed() ?: return null
+        myState.recentlyClosed = myState.recentlyClosed.filter { it != path }.toMutableList()
+        return path
+    }
+
     fun projectActivated(project: Project) {
         val key = keyOf(project)
         if (key == activeKey) return
@@ -134,6 +148,9 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
         if (!exiting && isTabProject(project)) {
             synchronized(this) {
                 myState.order = myState.order.filter { it != key }.toMutableList()
+                project.basePath?.let {
+                    myState.recentlyClosed = TabOrdering.pushClosed(myState.recentlyClosed, it, MAX_RECENTLY_CLOSED).toMutableList()
+                }
             }
         }
         fireTabsChanged()
@@ -156,6 +173,7 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
 
     companion object {
         private const val MAX_KNOWN = 50
+        private const val MAX_RECENTLY_CLOSED = 10
 
         fun getInstance(): ProjectTabsService = service()
 
