@@ -20,6 +20,7 @@ class ProjectTabsSettings : PersistentStateComponent<ProjectTabsSettings.State> 
         var snapWindows: Boolean = true
         var closeButton: CloseButtonMode = CloseButtonMode.HOVER
         var newTabPlacement: NewTabPlacement = NewTabPlacement.END
+        var onboardingShown: Boolean = false
     }
 
     private var myState = State()
