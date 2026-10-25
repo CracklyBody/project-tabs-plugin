@@ -7,6 +7,7 @@ import com.intellij.ui.dsl.builder.bind
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
 import dev.projecttabs.ProjectTabsBundle.message
+import dev.projecttabs.service.NewTabPlacement
 
 internal class ProjectTabsConfigurable : BoundConfigurable(message("settings.display.name")) {
 
@@ -44,6 +45,10 @@ internal class ProjectTabsConfigurable : BoundConfigurable(message("settings.dis
                 row { radioButton(message("settings.close.button.always"), CloseButtonMode.ALWAYS) }
                 row { radioButton(message("settings.close.button.never"), CloseButtonMode.NEVER) }
             }.bind(state::closeButton)
+            buttonsGroup(message("settings.new.tab.placement")) {
+                row { radioButton(message("settings.new.tab.placement.end"), NewTabPlacement.END) }
+                row { radioButton(message("settings.new.tab.placement.after.current"), NewTabPlacement.AFTER_CURRENT) }
+            }.bind(state::newTabPlacement)
         }
     }
 
