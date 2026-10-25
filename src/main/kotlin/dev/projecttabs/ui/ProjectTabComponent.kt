@@ -7,6 +7,8 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.GraphicsUtil
 import com.intellij.util.ui.JBUI
 import dev.projecttabs.service.ProjectTab
+import dev.projecttabs.settings.CloseButtonMode
+import dev.projecttabs.settings.ProjectTabsSettings
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics
@@ -51,11 +53,18 @@ internal class ProjectTabComponent(
         addMouseMotionListener(mouse)
     }
 
+    private val closeMode: CloseButtonMode
+        get() = ProjectTabsSettings.getInstance().state.closeButton
+
     private val showsClose: Boolean
-        get() = !tab.isClosing && (isActive || hovered)
+        get() = !tab.isClosing && when (closeMode) {
+            CloseButtonMode.ALWAYS -> true
+            CloseButtonMode.HOVER -> isActive || hovered
+            CloseButtonMode.NEVER -> false
+        }
 
     private val closeSpace: Int
-        get() = JBUI.scale(CLOSE_GAP) + CLOSE_ICON.iconWidth
+        get() = if (closeMode == CloseButtonMode.NEVER) 0 else JBUI.scale(CLOSE_GAP) + CLOSE_ICON.iconWidth
 
     private fun closeBounds(): Rectangle {
         val icon = CLOSE_ICON

@@ -3,6 +3,7 @@ package dev.projecttabs.settings
 import com.intellij.ide.GeneralSettings
 import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.ui.dsl.builder.bind
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
 import dev.projecttabs.ProjectTabsBundle.message
@@ -38,6 +39,11 @@ internal class ProjectTabsConfigurable : BoundConfigurable(message("settings.dis
                     )
                     .comment(message("settings.open.new.window.comment"))
             }
+            buttonsGroup(message("settings.close.button")) {
+                row { radioButton(message("settings.close.button.hover"), CloseButtonMode.HOVER) }
+                row { radioButton(message("settings.close.button.always"), CloseButtonMode.ALWAYS) }
+                row { radioButton(message("settings.close.button.never"), CloseButtonMode.NEVER) }
+            }.bind(state::closeButton)
         }
     }
 
