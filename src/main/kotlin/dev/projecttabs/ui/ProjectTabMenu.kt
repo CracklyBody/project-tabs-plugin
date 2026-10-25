@@ -6,11 +6,13 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import dev.projecttabs.ProjectTabsBundle
 import dev.projecttabs.actions.TabCommands
 import dev.projecttabs.service.ProjectTab
+import dev.projecttabs.settings.ProjectTabsConfigurable
 import org.jetbrains.annotations.Nls
 import javax.swing.JComponent
 
@@ -33,6 +35,10 @@ internal object ProjectTabMenu {
             addSeparator()
             add(item(message("action.ProjectTabs.CopyPath.text"), tab.path != null) { TabCommands.copyPath(project) })
             add(item(RevealFileAction.getActionName(), tab.path != null) { TabCommands.reveal(project) })
+            addSeparator()
+            add(item(message("menu.settings")) {
+                ShowSettingsUtil.getInstance().showSettingsDialog(owner, ProjectTabsConfigurable::class.java)
+            })
         }
         ActionManager.getInstance().createActionPopupMenu(PLACE, group).component.show(component, x, y)
     }

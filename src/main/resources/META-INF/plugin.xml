@@ -13,6 +13,10 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="dev.projecttabs.lifecycle.TabsProjectActivity"/>
+        <applicationConfigurable parentId="appearance"
+                                 id="dev.projecttabs.settings"
+                                 instance="dev.projecttabs.settings.ProjectTabsConfigurable"
+                                 key="settings.display.name"/>
         <actionPromoter implementation="dev.projecttabs.actions.ProjectTabsActionPromoter"/>
     </extensions>
 
