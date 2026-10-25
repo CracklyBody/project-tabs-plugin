@@ -7,6 +7,8 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
 import dev.projecttabs.service.ProjectTabsService
 
+enum class CloseButtonMode { ALWAYS, HOVER, NEVER }
+
 @Service(Service.Level.APP)
 @State(name = "ProjectTabsSettings", storages = [Storage("projectTabs.xml")])
 class ProjectTabsSettings : PersistentStateComponent<ProjectTabsSettings.State> {
@@ -15,6 +17,7 @@ class ProjectTabsSettings : PersistentStateComponent<ProjectTabsSettings.State> 
         var showTabs: Boolean = true
         var hideWhenSingle: Boolean = false
         var snapWindows: Boolean = true
+        var closeButton: CloseButtonMode = CloseButtonMode.HOVER
     }
 
     private var myState = State()
