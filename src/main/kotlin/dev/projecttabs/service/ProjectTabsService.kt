@@ -11,6 +11,7 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
+import dev.projecttabs.settings.ProjectTabsSettings
 import dev.projecttabs.switching.ProjectSwitcher
 import dev.projecttabs.switching.WindowGeometry
 import java.io.File
@@ -64,7 +65,7 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
         for (key in byKey.keys) {
             if (key !in known) {
                 val anchor = if (activeKey == key) previousActiveKey else activeKey
-                known = TabOrdering.insert(known, key, NewTabPlacement.END, anchor)
+                known = TabOrdering.insert(known, key, ProjectTabsSettings.getInstance().state.newTabPlacement, anchor)
             }
         }
         if (known !== myState.order) {

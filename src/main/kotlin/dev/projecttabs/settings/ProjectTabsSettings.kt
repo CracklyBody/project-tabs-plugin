@@ -5,6 +5,7 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
+import dev.projecttabs.service.NewTabPlacement
 import dev.projecttabs.service.ProjectTabsService
 
 enum class CloseButtonMode { ALWAYS, HOVER, NEVER }
@@ -18,6 +19,7 @@ class ProjectTabsSettings : PersistentStateComponent<ProjectTabsSettings.State> 
         var hideWhenSingle: Boolean = false
         var snapWindows: Boolean = true
         var closeButton: CloseButtonMode = CloseButtonMode.HOVER
+        var newTabPlacement: NewTabPlacement = NewTabPlacement.END
     }
 
     private var myState = State()
