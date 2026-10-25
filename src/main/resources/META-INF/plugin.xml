@@ -18,6 +18,7 @@
                                  instance="dev.projecttabs.settings.ProjectTabsConfigurable"
                                  key="settings.display.name"/>
         <actionPromoter implementation="dev.projecttabs.actions.ProjectTabsActionPromoter"/>
+        <notificationGroup id="Project Tabs" displayType="BALLOON" key="notification.group.name"/>
     </extensions>
 
     <applicationListeners>
