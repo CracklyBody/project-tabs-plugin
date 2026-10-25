@@ -5,6 +5,7 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
+import dev.projecttabs.service.ProjectTabsService
 
 @Service(Service.Level.APP)
 @State(name = "ProjectTabsSettings", storages = [Storage("projectTabs.xml")])
@@ -22,6 +23,10 @@ class ProjectTabsSettings : PersistentStateComponent<ProjectTabsSettings.State> 
 
     override fun loadState(state: State) {
         myState = state
+    }
+
+    fun settingsChanged() {
+        ProjectTabsService.getInstance().fireTabsChanged()
     }
 
     companion object {
