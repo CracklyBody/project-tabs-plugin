@@ -87,7 +87,7 @@ internal class ProjectTabsStrip : JPanel(null) {
         tabComponents.forEach { remove(it) }
         tabComponents.clear()
         tabs.forEachIndexed { index, tab ->
-            val component = ProjectTabComponent(this, tab, tab.project === ownerProject)
+            val component = ProjectTabComponent(this, tab, tab.project === ownerProject, index + 1, tabs.size)
             tabComponents += component
             add(component, index)
         }
