@@ -6,6 +6,7 @@ import com.intellij.ui.ColorUtil
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.GraphicsUtil
 import com.intellij.util.ui.JBUI
+import dev.projecttabs.ProjectTabsBundle
 import dev.projecttabs.service.ProjectTab
 import dev.projecttabs.settings.CloseButtonMode
 import dev.projecttabs.settings.ProjectTabsSettings
@@ -18,6 +19,10 @@ import java.awt.Rectangle
 import java.awt.dnd.DragSource
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import javax.accessibility.AccessibleContext
+import javax.accessibility.AccessibleRole
+import javax.accessibility.AccessibleState
+import javax.accessibility.AccessibleStateSet
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
@@ -25,6 +30,8 @@ internal class ProjectTabComponent(
     private val strip: ProjectTabsStrip,
     val tab: ProjectTab,
     val isActive: Boolean,
+    private val position: Int,
+    private val count: Int,
 ) : JPanel(null) {
 
     private val label = object : JBLabel(tab.displayName) {
@@ -39,6 +46,7 @@ internal class ProjectTabComponent(
     private var closeHovered = false
     private var pressedAt: Point? = null
     private var dragging = false
+    private var accessible: AccessibleContext? = null
 
     init {
         isOpaque = false
@@ -166,6 +174,18 @@ internal class ProjectTabComponent(
                     if (showsClose && closeBounds().contains(e.point)) strip.closeTab(tab) else strip.activateTab(tab)
             }
         }
+    }
+
+    override fun getAccessibleContext(): AccessibleContext =
+        accessible ?: AccessibleProjectTab().also { accessible = it }
+
+    private inner class AccessibleProjectTab : AccessibleJPanel() {
+        override fun getAccessibleRole(): AccessibleRole = AccessibleRole.PAGE_TAB
+        override fun getAccessibleName(): String = tab.displayName
+        override fun getAccessibleDescription(): String = ProjectTabsBundle.message("accessible.tab.description", position, count)
+
+        override fun getAccessibleStateSet(): AccessibleStateSet =
+            super.getAccessibleStateSet().apply { if (isActive) add(AccessibleState.SELECTED) }
     }
 
     private companion object {
