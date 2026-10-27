@@ -5,6 +5,16 @@
 
     <description><![CDATA[
         <p>Shows every open project as a tab in the main toolbar, like documents in a word processor or pages in a browser.</p>
+        <ul>
+            <li>Click a tab to switch projects, or use <b>Next/Previous Project Tab</b> and <b>Go to Project Tab 1–9</b>.</li>
+            <li>Close a project with the tab's <b>×</b> button, a middle-click or the context menu.</li>
+            <li>The window you switch to takes the current window's size and position, so several project windows feel like one window with tabs.</li>
+            <li>Drag tabs to reorder them; the order is kept across restarts.</li>
+            <li><b>＋</b> opens a recent project or any folder as a new tab.</li>
+            <li>Reopen the last closed project, close other tabs or tabs to the right.</li>
+        </ul>
+        <p>Works in Android Studio and every other IntelliJ-based IDE with the new UI. Configure it in
+        <i>Settings | Appearance &amp; Behavior | Project Tabs</i>; all shortcuts are under <i>Window | Project Tabs</i> in the keymap.</p>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
