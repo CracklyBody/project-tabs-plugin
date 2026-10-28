@@ -1,6 +1,7 @@
 package dev.projecttabs.ui
 
 import com.intellij.icons.AllIcons
+import com.intellij.ide.ui.customization.CustomizationUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.components.JBLabel
@@ -52,6 +53,7 @@ internal class ProjectTabComponent(
 
     init {
         isOpaque = false
+        putClientProperty(CustomizationUtil.DISABLE_CUSTOMIZE_POPUP_KEY, true)
         add(label)
         toolTipText = buildString {
             append("<html><b>").append(StringUtil.escapeXmlEntities(tab.displayName)).append("</b>")
