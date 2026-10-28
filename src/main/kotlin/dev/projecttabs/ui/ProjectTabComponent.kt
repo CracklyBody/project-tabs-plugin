@@ -40,6 +40,8 @@ internal class ProjectTabComponent(
             isActive -> TabsColors.foreground
             else -> TabsColors.inactiveForeground
         }
+
+        override fun contains(x: Int, y: Int): Boolean = false
     }
 
     private var hovered = false
