@@ -5,10 +5,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.WindowManager
 import dev.projecttabs.settings.ProjectTabsSettings
 import java.awt.Frame
-import java.awt.Point
 import java.awt.Rectangle
+import javax.swing.JFrame
+import javax.swing.Timer
 
-data class WindowGeometry(val bounds: Rectangle, val maximized: Boolean, val fullScreen: Boolean)
+data class WindowGeometry(val bounds: Rectangle, val maximized: Boolean, val fullScreen: Boolean, val screen: Rectangle)
 
 object ProjectSwitcher {
 
@@ -20,6 +21,7 @@ object ProjectSwitcher {
             bounds = frame.bounds,
             maximized = isMaximized(frame),
             fullScreen = windowManager.getIdeFrame(project)?.isInFullScreen == true,
+            screen = frame.graphicsConfiguration.bounds,
         )
     }
 
@@ -42,20 +44,45 @@ object ProjectSwitcher {
         if ((frame.extendedState and Frame.ICONIFIED) != 0) {
             frame.extendedState = frame.extendedState and Frame.ICONIFIED.inv()
         }
-        val targetMaximized = isMaximized(frame)
-        if (source.maximized) {
-            if (!targetMaximized || !source.bounds.contains(centerOf(frame.bounds))) {
-                frame.extendedState = Frame.NORMAL
-                frame.bounds = source.bounds
-                frame.extendedState = Frame.MAXIMIZED_BOTH
-            }
-        } else {
-            if (targetMaximized) frame.extendedState = frame.extendedState and Frame.MAXIMIZED_BOTH.inv()
-            if (frame.bounds != source.bounds) frame.bounds = source.bounds
+        val onSourceScreen = frame.graphicsConfiguration.bounds == source.screen
+        if (source.maximized && isMaximized(frame) && onSourceScreen) return
+        if (isMaximized(frame)) frame.extendedState = frame.extendedState and Frame.MAXIMIZED_BOTH.inv()
+        when {
+            !source.maximized -> moveTo(frame, source.bounds)
+            !onSourceScreen -> moveTo(frame, WindowPlacement.normalBoundsOn(frame.size, source.screen)) { maximize(frame) }
+            else -> maximize(frame)
         }
+    }
+
+    private fun moveTo(frame: JFrame, bounds: Rectangle, then: () -> Unit = {}) {
+        frame.bounds = bounds
+        val deadline = System.currentTimeMillis() + SETTLE_TIMEOUT_MS
+        var last = frame.bounds
+        var restingTicks = 0
+        val timer = Timer(SETTLE_POLL_MS, null)
+        timer.addActionListener {
+            val current = frame.bounds
+            restingTicks = if (current == last) restingTicks + 1 else 0
+            last = current
+            when {
+                !frame.isDisplayable -> timer.stop()
+                (current == bounds && restingTicks >= RESTING_TICKS) || System.currentTimeMillis() > deadline -> {
+                    timer.stop()
+                    then()
+                }
+                current != bounds && restingTicks >= RESTING_TICKS -> frame.bounds = bounds
+            }
+        }
+        timer.start()
+    }
+
+    private fun maximize(frame: Frame) {
+        frame.extendedState = frame.extendedState or Frame.MAXIMIZED_BOTH
     }
 
     private fun isMaximized(frame: Frame): Boolean = (frame.extendedState and Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH
 
-    private fun centerOf(bounds: Rectangle) = Point(bounds.centerX.toInt(), bounds.centerY.toInt())
+    private const val SETTLE_POLL_MS = 50
+    private const val RESTING_TICKS = 3
+    private const val SETTLE_TIMEOUT_MS = 1500L
 }
