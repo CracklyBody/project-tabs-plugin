@@ -144,9 +144,9 @@ class ProjectTabsService : PersistentStateComponent<ProjectTabsService.State> {
     fun projectClosed(project: Project) {
         if (project.isDefault) return
         val key = keyOf(project)
-        closingKeys -= key
+        val wasTab = closingKeys.remove(key)
         val successor = successors.remove(key)
-        if (!exiting && isTabProject(project)) {
+        if (!exiting && wasTab) {
             synchronized(this) {
                 myState.order = myState.order.filter { it != key }.toMutableList()
                 project.basePath?.let {
