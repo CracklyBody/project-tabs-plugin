@@ -18,7 +18,7 @@ Open projects as tabs in the main toolbar of Android Studio and other IntelliJ-b
 | Go to tab 1–8 / last | ⌃⌥1…8 / ⌃⌥9    | —                       |
 | Reopen closed tab    | ⌃⌥⇧T           | —                       |
 
-Rebind them in Settings | Keymap under Window | Toolbar Project Tabs. Options are in Settings | Appearance & Behavior | Toolbar Project Tabs.
+Rebind them in Settings | Keymap under Window | Toolbar Project Tabs. Options are in Settings | Tools | Toolbar Project Tabs.
 
 Requires version 2025.3 or newer with the new UI.
 
