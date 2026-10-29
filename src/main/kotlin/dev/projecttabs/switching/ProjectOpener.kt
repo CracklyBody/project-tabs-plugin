@@ -1,8 +1,7 @@
 package dev.projecttabs.switching
 
-import com.intellij.icons.AllIcons
 import com.intellij.ide.ProjectGroupActionGroup
-import com.intellij.ide.RecentProjectsManager
+import com.intellij.ide.RecentProjectListActionProvider
 import com.intellij.ide.ReopenProjectAction
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.actionSystem.AnAction
@@ -33,7 +32,7 @@ object ProjectOpener {
 
     fun recentProjectActions(): List<AnAction> {
         val open = ProjectTabsService.getInstance().tabs().mapNotNull { it.path }.toSet()
-        val recent = RecentProjectsManager.getInstance().getRecentProjectsActions(false)
+        val recent = RecentProjectListActionProvider.getInstance().getActions(false)
             .flatMap { if (it is ProjectGroupActionGroup) it.childActionsOrStubs.asList() else listOf(it) }
             .filterIsInstance<ReopenProjectAction>()
             .filter { it.projectPath !in open && !it.isRemoved }
@@ -42,7 +41,7 @@ object ProjectOpener {
         return recent.map { action ->
             val name = action.projectNameToDisplay
             val text = if (name in duplicateNames) "$name — ${action.projectPathToDisplay}" else name
-            DumbAwareAction.create(text, action.projectIcon ?: AllIcons.Nodes.Folder) { openInNewWindow(action.projectPath) }
+            DumbAwareAction.create(text, action.projectIcon) { openInNewWindow(action.projectPath) }
         }
     }
 }
