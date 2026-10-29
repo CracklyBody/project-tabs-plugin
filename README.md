@@ -41,7 +41,7 @@ candidate collides with an existing shortcut in the default, GNOME, KDE or XWin 
 
 ## Settings
 
-**Settings | Appearance & Behavior | Project Tabs**
+**Settings | Tools | Project Tabs**
 
 - Show project tabs in the main toolbar
 - Hide tabs when only one project is open

@@ -15,5 +15,5 @@
 - ＋ button: open a recent project or any folder as a new tab
 - Reopen Closed Project Tab, Copy Project Path, Reveal Project Folder
 - Overflow popup with speed search when tabs do not fit
-- Settings under Appearance & Behavior | Project Tabs
+- Settings under Tools | Project Tabs
 - One-time suggestion to open projects in a new window, so each one becomes a tab

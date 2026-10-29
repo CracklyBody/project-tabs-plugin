@@ -14,7 +14,7 @@
             <li>Reopen the last closed project, close other tabs or tabs to the right.</li>
         </ul>
         <p>Works in Android Studio and every other IntelliJ-based IDE with the new UI. Configure it in
-        <i>Settings | Appearance &amp; Behavior | Project Tabs</i>; all shortcuts are under <i>Window | Project Tabs</i> in the keymap.</p>
+        <i>Settings | Tools | Project Tabs</i>; all shortcuts are under <i>Window | Project Tabs</i> in the keymap.</p>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
@@ -23,7 +23,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="dev.projecttabs.lifecycle.TabsProjectActivity"/>
-        <applicationConfigurable parentId="appearance"
+        <applicationConfigurable parentId="tools"
                                  id="dev.projecttabs.settings"
                                  instance="dev.projecttabs.settings.ProjectTabsConfigurable"
                                  key="settings.display.name"/>
