@@ -3,6 +3,7 @@ package dev.projecttabs.settings
 import com.intellij.ide.GeneralSettings
 import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.bind
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
@@ -15,6 +16,9 @@ internal class ProjectTabsConfigurable : BoundConfigurable(message("settings.dis
         val state = ProjectTabsSettings.getInstance().state
         val general = GeneralSettings.getInstance()
         return panel {
+            row {
+                text(message("settings.description"))
+            }.bottomGap(BottomGap.SMALL)
             row {
                 checkBox(message("settings.show.tabs")).bindSelected(state::showTabs)
             }
