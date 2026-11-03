@@ -74,7 +74,7 @@ internal class CloseProjectTabsToRightAction : ProjectTabsAction() {
 
 internal class ReopenClosedProjectTabAction : ProjectTabsAction() {
     override fun isEnabled(project: Project) = TabCommands.canReopenClosed()
-    override fun perform(project: Project) = TabCommands.reopenClosed()
+    override fun perform(project: Project) = TabCommands.reopenClosed(project)
 }
 
 internal class CopyProjectPathAction : ProjectTabsAction() {

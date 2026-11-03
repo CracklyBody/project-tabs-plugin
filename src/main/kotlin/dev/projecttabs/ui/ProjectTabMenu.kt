@@ -31,7 +31,7 @@ internal object ProjectTabMenu {
                 TabCommands.closeToRight(project, owner)
             })
             addSeparator()
-            add(item(message("action.ProjectTabs.ReopenClosed.text"), TabCommands.canReopenClosed()) { TabCommands.reopenClosed() })
+            add(item(message("action.ProjectTabs.ReopenClosed.text"), TabCommands.canReopenClosed()) { TabCommands.reopenClosed(owner) })
             addSeparator()
             add(item(message("action.ProjectTabs.CopyPath.text"), tab.path != null) { TabCommands.copyPath(project) })
             add(item(RevealFileAction.getActionName(), tab.path != null) { TabCommands.reveal(project) })

@@ -18,19 +18,21 @@ object ProjectOpener {
 
     private const val MAX_RECENT = 15
 
-    fun openInNewWindow(path: String) {
+    fun openInNewWindow(path: String, from: Project?) {
+        val geometry = ProjectSwitcher.geometryOf(from)
         ApplicationManager.getApplication().invokeLater {
-            ProjectUtil.openOrImport(Path.of(path), null, true)
+            val project = ProjectUtil.openOrImport(Path.of(path), null, true) ?: return@invokeLater
+            ProjectSwitcher.switchTo(project, geometry)
         }
     }
 
     fun chooseAndOpen(project: Project?) {
         val descriptor = FileChooserDescriptorFactory.singleFileOrDir()
             .withTitle(ProjectTabsBundle.message("dialog.open.project.title"))
-        FileChooser.chooseFile(descriptor, project, null) { file -> openInNewWindow(file.path) }
+        FileChooser.chooseFile(descriptor, project, null) { file -> openInNewWindow(file.path, project) }
     }
 
-    fun recentProjectActions(): List<AnAction> {
+    fun recentProjectActions(from: Project?): List<AnAction> {
         val open = ProjectTabsService.getInstance().tabs().mapNotNull { it.path }.toSet()
         val recent = RecentProjectListActionProvider.getInstance().getActions(false)
             .flatMap { if (it is ProjectGroupActionGroup) it.childActionsOrStubs.asList() else listOf(it) }
@@ -41,7 +43,7 @@ object ProjectOpener {
         return recent.map { action ->
             val name = action.projectNameToDisplay
             val text = if (name in duplicateNames) "$name — ${action.projectPathToDisplay}" else name
-            DumbAwareAction.create(text, action.projectIcon) { openInNewWindow(action.projectPath) }
+            DumbAwareAction.create(text, action.projectIcon) { openInNewWindow(action.projectPath, from) }
         }
     }
 }

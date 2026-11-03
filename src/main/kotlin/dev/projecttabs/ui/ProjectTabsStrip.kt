@@ -202,7 +202,7 @@ internal class ProjectTabsStrip : JPanel(null) {
 
     private fun showNewTabPopup(button: JComponent) {
         val group = DefaultActionGroup()
-        val recent = ProjectOpener.recentProjectActions()
+        val recent = ProjectOpener.recentProjectActions(ownerProject)
         if (recent.isNotEmpty()) {
             group.addSeparator(ProjectTabsBundle.message("popup.new.tab.recent"))
             group.addAll(recent)

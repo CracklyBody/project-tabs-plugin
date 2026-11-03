@@ -40,8 +40,8 @@ internal object TabCommands {
 
     fun canReopenClosed(): Boolean = service.peekRecentlyClosed() != null
 
-    fun reopenClosed() {
-        service.popRecentlyClosed()?.let(ProjectOpener::openInNewWindow)
+    fun reopenClosed(from: Project?) {
+        service.popRecentlyClosed()?.let { ProjectOpener.openInNewWindow(it, from) }
     }
 
     fun copyPath(project: Project) {
