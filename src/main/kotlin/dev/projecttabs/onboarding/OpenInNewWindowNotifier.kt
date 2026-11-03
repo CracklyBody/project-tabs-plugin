@@ -10,7 +10,7 @@ import dev.projecttabs.settings.ProjectTabsSettings
 
 internal object OpenInNewWindowNotifier {
 
-    private const val GROUP_ID = "Toolbar Project Tabs"
+    private const val GROUP_ID = "Onewindow"
 
     fun notifyOnce(project: Project) {
         val settings = ProjectTabsSettings.getInstance()

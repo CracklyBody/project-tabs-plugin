@@ -1,6 +1,6 @@
 import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
 
-rootProject.name = "project-tabs"
+rootProject.name = "onewindow"
 
 pluginManagement {
     plugins {

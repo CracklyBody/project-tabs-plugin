@@ -1,10 +1,10 @@
 <img src="src/main/resources/META-INF/pluginIcon.svg" width="64" alt="">
 
-# Toolbar Project Tabs
+# Onewindow
 
 Open projects as tabs in the main toolbar of Android Studio and other IntelliJ-based IDEs.
 
-![Toolbar Project Tabs](docs/screenshot.png)
+![Onewindow](docs/screenshot.png)
 
 - Click a tab to switch. The window opens in the same place and size.
 - Close with × or middle-click, open a project with ＋.
@@ -18,7 +18,7 @@ Open projects as tabs in the main toolbar of Android Studio and other IntelliJ-b
 | Go to tab 1–8 / last | ⌃⌥1…8 / ⌃⌥9    | —                       |
 | Reopen closed tab    | ⌃⌥⇧T           | —                       |
 
-Rebind them in Settings | Keymap under Window | Toolbar Project Tabs. Options are in Settings | Tools | Toolbar Project Tabs.
+Rebind them in Settings | Keymap under Window | Onewindow. Options are in Settings | Tools | Onewindow.
 
 Requires version 2025.3 or newer with the new UI.
 

@@ -1,6 +1,6 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# Toolbar Project Tabs Changelog
+# Onewindow Changelog
 
 ## Unreleased
 
@@ -17,5 +17,5 @@
 - ＋ button: open a recent project or any folder as a new tab
 - Reopen Closed Project Tab, Copy Project Path, Reveal Project Folder
 - Overflow popup with speed search when tabs do not fit
-- Settings under Tools | Toolbar Project Tabs
+- Settings under Tools | Onewindow
 - One-time suggestion to open projects in a new window, so each one becomes a tab
