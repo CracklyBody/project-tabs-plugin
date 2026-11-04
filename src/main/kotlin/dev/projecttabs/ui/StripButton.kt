@@ -75,6 +75,6 @@ internal class StripButton(
 
     private inner class AccessibleStripButton : AccessibleJComponent() {
         override fun getAccessibleRole(): AccessibleRole = AccessibleRole.PUSH_BUTTON
-        override fun getAccessibleName(): String = accessibleName
+        override fun getAccessibleName(): String = this@StripButton.accessibleName
     }
 }
