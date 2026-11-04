@@ -4,6 +4,13 @@
 
 ## Unreleased
 
+## 1.1.0 - 2026-11-04
+
+### Fixed
+
+- Projects opened from ＋ or with Reopen Closed Project Tab take the current window's size and position
+- Screen readers could not read the names of the ＋ and overflow buttons
+
 ## 1.0.0 - 2026-10-29
 
 ### Added
