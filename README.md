@@ -1,5 +1,20 @@
 <img src="src/main/resources/META-INF/pluginIcon.svg" width="64" alt="">
 
+<p align="center">
+  <img src="docs/media/switch-tabs.gif" alt="Switch tabs" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/media/open-project.gif" alt="Open a project" width="49%" align="top" vspace="2">
+  <img src="docs/media/close-and-reopen.gif" alt="Close and reopen a tab" width="49%" align="top" vspace="2">
+  <img src="docs/media/reorder-tabs.gif" alt="Reorder tabs" width="49%" align="top" vspace="2">
+  <img src="docs/media/hidden-tabs.png" alt="Hidden tabs" width="49%" align="top" vspace="2">
+  <img src="docs/media/tabs.png" alt="Tabs" width="49%" align="top" vspace="2">
+  <img src="docs/media/light-theme.png" alt="Light theme" width="49%" align="top" vspace="2">
+  <img src="docs/media/context-menu.png" alt="Context menu" width="49%" align="top" vspace="2">
+  <img src="docs/media/settings.png" alt="Settings" width="49%" align="top" vspace="2">
+</p>
+
 # Onewindow
 
 Open projects as tabs in the main toolbar of Android Studio and other IntelliJ-based IDEs.
